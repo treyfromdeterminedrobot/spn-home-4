@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SERVPRONET — Clean Modular Exploration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f4f1;
+      --bg-2: #efefeb;
+      --surface: #ffffff;
+      --surface-soft: #fafaf8;
+      --border: #e4e4df;
+      --border-2: #ededea;
+      --text: #151515;
+      --text-2: #686868;
+      --text-3: #919191;
+      --dark: #0f1012;
+      --orange: #ff6b1a;
+      --orange-soft: #fff1e7;
+      --green: #2bb34a;
+      --blue: #2f8cff;
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --shadow: 0 10px 28px rgba(16, 16, 18, 0.05);
+      --toolbar-w: 92px;
+      --nav-h: 78px;
+      --max: 1500px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      letter-spacing: -0.03em;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: var(--toolbar-w);
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 18px 0 24px;
+      z-index: 30;
+    }
+    .tool-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 18px;
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--orange);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .tool-spacer { flex: 1; }
+    .tool-link {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      display: grid;
+      place-items: center;
+      color: #343434;
+      margin: 8px 0;
+      transition: background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+    .tool-link:hover {
+      background: var(--surface);
+      border-color: var(--border);
+      transform: translateY(-1px);
+    }
+    .tool-link svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+    }
+
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: var(--toolbar-w);
+      right: 0;
+      height: var(--nav-h);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px 0 30px;
+      background: rgba(244,244,241,0.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .brand span { color: var(--orange); }
+    .nav-left, .nav-right, .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .nav-links a {
+      font-size: 14px;
+      color: var(--text-2);
+      padding-top: 2px;
+    }
+    .nav-links a.active { color: var(--text); font-weight: 700; }
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 14px;
+      color: var(--text);
+      min-height: 44px;
+    }
+    .nav-pill .count {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--dark);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .nav-icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: grid;
+      place-items: center;
+      color: var(--text);
+    }
+
+    .page {
+      margin-left: var(--toolbar-w);
+      padding-top: calc(var(--nav-h) + 20px);
+    }
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 24px 34px;
+    }
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+      gap: 20px;
+      align-items: start;
+    }
+    .pane { min-width: 0; }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: 700;
+      margin: 0 0 18px;
+      letter-spacing: -0.05em;
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 14px;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.01);
+    }
+    .filter-pill.active {
+      background: #f5aa44;
+      border-color: #f5aa44;
+      color: #111;
+      font-weight: 700;
+    }
+    .filter-pill .count {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--dark);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .news-board {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .important-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 2px;
+    }
+
+    .important-card {
+      min-height: 260px;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .important-card.orange {
+      background: linear-gradient(180deg, #ffb14a 0%, #ffa63a 100%);
+      border-color: #ffb14a;
+      color: #111;
+    }
+
+    .important-card.dark {
+      background: var(--dark);
+      border-color: var(--dark);
+      color: white;
+    }
+
+    .important-card .card-title {
+      font-size: 25px;
+      line-height: 1.03;
+      margin-top: 14px;
+    }
+
+    .important-card .card-sub {
+      max-width: 360px;
+      line-height: 1.35;
+    }
+
+    .important-card.dark .card-sub,
+    .important-card.dark .meta-label {
+      color: rgba(255,255,255,0.58);
+    }
+
+    .important-card.dark .meta-value {
+      color: white;
+    }
+    .news-column-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      color: var(--text-2);
+      padding: 8px 2px 2px;
+      margin-bottom: 2px;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex: none;
+    }
+    .dot.blue { background: var(--blue); }
+    .dot.green { background: var(--green); }
+
+    .stack { display: grid; gap: 14px; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .card-body {
+      padding: 22px 22px 18px;
+    }
+    .card-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .mini-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      white-space: nowrap;
+      background: var(--orange-soft);
+      color: var(--orange);
+      border: 1px solid #ffe0cc;
+    }
+    .mini-badge .tiny-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .mini-badge.blue { background: #eef5ff; color: var(--blue); border-color: #d9e8ff; }
+    .mini-badge.green { background: #ecfbef; color: var(--green); border-color: #d3f2da; }
+
+    .jobline {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--text-2);
+      margin-bottom: 6px;
+    }
+    .icon-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      flex: none;
+      background: var(--surface-soft);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.05;
+      margin: 0 0 2px;
+      letter-spacing: -0.04em;
+    }
+    .card-sub {
+      font-size: 14px;
+      color: var(--text-3);
+      margin: 0;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-2);
+    }
+    .meta-label {
+      font-size: 13px;
+      color: var(--text-3);
+      margin-bottom: 5px;
+    }
+    .meta-value {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .feature-card {
+      min-height: 360px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background: linear-gradient(180deg, #ffb14a 0%, #ffa63a 100%);
+      color: #111;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card .card-body { padding: 26px; }
+    .feature-card h3 {
+      font-size: 22px;
+      line-height: 1.05;
+      margin: 0 0 10px;
+      letter-spacing: -0.05em;
+    }
+    .feature-card p {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(17,17,17,0.74);
+      max-width: 260px;
+      line-height: 1.35;
+    }
+    .feature-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: #111;
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      width: fit-content;
+    }
+    .illustration {
+      position: absolute;
+      right: 8px;
+      bottom: 0;
+      width: 210px;
+      height: 180px;
+      opacity: 0.95;
+    }
+    .illustration .truck-body { fill: #8ec7ff; }
+    .illustration .box { fill: #d4832f; }
+    .illustration .wheel { fill: #2b2b2b; }
+    .illustration .wheel-inner { fill: #fff; }
+    .illustration .glass { fill: #eef5fb; }
+
+    .traditional-feed {
+      margin-top: 24px;
+      display: grid;
+      gap: 14px;
+    }
+    .feed-row {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 24px;
+      padding: 18px 20px;
+      display: grid;
+      grid-template-columns: 92px 1fr auto;
+      gap: 16px;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+    .feed-source {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .feed-main h4 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+    .feed-main p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-2);
+    }
+    .feed-time {
+      font-size: 13px;
+      color: var(--text-3);
+      white-space: nowrap;
+    }
+
+    .widget-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .widget {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 26px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      min-height: 162px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .widget.dark {
+      background: var(--dark);
+      border-color: var(--dark);
+      color: white;
+    }
+    .widget.orange {
+      background: linear-gradient(180deg, #ffb14a 0%, #ffa63a 100%);
+      border-color: #ffb14a;
+      color: #111;
+    }
+    .widget-label {
+      font-size: 13px;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .widget.dark .widget-label { color: rgba(255,255,255,0.55); }
+    .widget.orange .widget-label { color: rgba(17,17,17,0.55); }
+    .widget-value {
+      font-size: 60px;
+      line-height: 0.95;
+      font-weight: 300;
+      letter-spacing: -0.06em;
+    }
+    .widget-sub {
+      font-size: 14px;
+      color: var(--text-2);
+    }
+    .widget.dark .widget-sub { color: rgba(255,255,255,0.72); }
+    .widget.orange .widget-sub { color: rgba(17,17,17,0.72); }
+
+    .wide-card {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    .wide-card.orange {
+      background: linear-gradient(180deg, #ffb14a 0%, #ffa63a 100%);
+      border-color: #ffb14a;
+      color: #111;
+    }
+    .wide-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .wide-card h3 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.04em;
+    }
+    .wide-card p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.4;
+    }
+    .wide-card.orange p { color: rgba(17,17,17,0.74); }
+
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .resource {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      min-height: 86px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .resource small {
+      font-size: 12px;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .resource strong {
+      font-size: 15px;
+      line-height: 1.12;
+    }
+
+    .list-card {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 28px;
+      padding: 10px 20px 6px;
+      box-shadow: var(--shadow);
+    }
+    .list-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border-2);
+    }
+    .list-item:last-child { border-bottom: 0; }
+    .list-item-title {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.18;
+      margin-bottom: 4px;
+    }
+    .list-item-sub {
+      font-size: 13px;
+      color: var(--text-2);
+    }
+    .chev {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      color: var(--text-2);
+      flex: none;
+    }
+
+
+    .important-card.orange .card-title,
+    .important-card.orange .meta-value {
+      color: #0b0b0b;
+    }
+
+    .important-card.orange .card-sub,
+    .important-card.orange .jobline,
+    .important-card.orange .meta-label {
+      color: rgba(0, 0, 0, 0.78);
+    }
+
+    .important-card.orange .icon-circle {
+      color: #0b0b0b;
+      border-color: rgba(0, 0, 0, 0.18);
+      background: rgba(255, 255, 255, 0.34);
+    }
+
+    @media (max-width: 1340px) {
+      .split { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 1020px) {
+      .news-board, .important-grid { grid-template-columns: 1fr; }
+      .widget-grid, .resource-grid { grid-template-columns: 1fr; }
+      .feed-row { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 780px) {
+      :root { --toolbar-w: 0px; }
+      .toolbar { display: none; }
+      .top-nav { left: 0; }
+      .wrap { padding: 0 16px 28px; }
+      .nav-left { gap: 14px; }
+      .nav-right .nav-pill { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="toolbar">
+    <div class="tool-logo">SP</div>
+    <a class="tool-link" href="#" title="WorkCenter">
+      <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M8 6V4h8v2"/></svg>
+    </a>
+    <a class="tool-link" href="#" title="Salesforce">
+      <svg viewBox="0 0 24 24"><path d="M7 18h9.5a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.5 1.7A3.8 3.8 0 0 0 7 18Z"/></svg>
+    </a>
+    <a class="tool-link" href="#" title="Tableau">
+      <svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M10 19v-8"/><path d="M16 19v-4"/><path d="M22 19v-12"/></svg>
+    </a>
+    <a class="tool-link" href="#" title="DryBook">
+      <svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z"/><path d="M5 16h14"/></svg>
+    </a>
+    <a class="tool-link" href="#" title="SERVPRO U">
+      <svg viewBox="0 0 24 24"><path d="m3 9 9-4 9 4-9 4-9-4Z"/><path d="M7 11.5v4.2c0 1.7 2.3 3 5 3s5-1.3 5-3v-4.2"/></svg>
+    </a>
+    <div class="tool-spacer"></div>
+    <a class="tool-link" href="#" title="Support">
+      <svg viewBox="0 0 24 24"><path d="M12 18h.01"/><path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 3-3 3"/><circle cx="12" cy="12" r="9"/></svg>
+    </a>
+  </aside>
+
+  <nav class="top-nav">
+    <div class="nav-left">
+      <div class="brand">SERVPRO<span>NET</span></div>
+      <div class="nav-links">
+        <a class="active" href="#">News &amp; Updates</a>
+        <a href="#">Work Resources</a>
+        <a href="#">National Accounts</a>
+        <a href="#">People &amp; Support</a>
+        <a href="#">Training</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-pill">Assigned <span class="count">15</span></div>
+      <button class="nav-icon-btn" aria-label="Settings">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0A1.65 1.65 0 0 0 10 3.09V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0A1.65 1.65 0 0 0 20.91 10H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <main class="page">
+    <div class="wrap">
+      <div class="split">
+        <section class="pane">
+          <h1 class="section-title">News</h1>
+
+          <div class="filter-row">
+            <div class="filter-pill">Priority <span class="count">4</span></div>
+            <div class="filter-pill">Bulletins <span class="count">12</span></div>
+            <div class="filter-pill active">Assigned <span class="count">15</span></div>
+            <div class="filter-pill">Completed <span class="count">10</span></div>
+          </div>
+
+          <div class="news-board">
+            <div class="important-grid">
+              <article class="important-card orange">
+                <div class="card-body">
+                  <div class="card-top">
+                    <div class="jobline">
+                      <div class="icon-circle">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 9 9-4 9 4-9 4-9-4Z"/><path d="M3 9v6l9 4 9-4V9"/></svg>
+                      </div>
+                      <div>
+                        <div class="card-title">State Farm audit format change requires immediate documentation update</div>
+                        <p class="card-sub">Files submitted under the previous format after May 12 may be rejected by the APA monitor.</p>
+                      </div>
+                    </div>
+                    <div class="mini-badge"><span class="tiny-dot"></span>Immediate</div>
+                  </div>
+                  <div class="meta-grid">
+                    <div>
+                      <div class="meta-label">Category</div>
+                      <div class="meta-value">National Accounts</div>
+                    </div>
+                    <div>
+                      <div class="meta-label">Effective</div>
+                      <div class="meta-value">12 Apr</div>
+                    </div>
+                    <div>
+                      <div class="meta-label">Audience</div>
+                      <div class="meta-value">All Owners</div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="important-card dark">
+                <div class="card-body">
+                  <div class="card-top">
+                    <div class="jobline">
+                      <div class="icon-circle" style="background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.16); color:white;">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18"/><path d="M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>
+                      </div>
+                      <div>
+                        <div class="card-title">Severe weather deployment activated — Gulf Coast</div>
+                        <p class="card-sub">Storm operations are active. Review deployment guidance, job intake expectations, and response resources.</p>
+                      </div>
+                    </div>
+                    <div class="mini-badge"><span class="tiny-dot"></span>Active</div>
+                  </div>
+                  <div class="meta-grid">
+                    <div>
+                      <div class="meta-label">Category</div>
+                      <div class="meta-value">Storm Operations</div>
+                    </div>
+                    <div>
+                      <div class="meta-label">Posted</div>
+                      <div class="meta-value">Today</div>
+                    </div>
+                    <div>
+                      <div class="meta-label">Region</div>
+                      <div class="meta-value">Gulf Coast</div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <article class="card">
+              <div class="card-body">
+                <div class="card-top">
+                  <div class="jobline">
+                    <div class="icon-circle">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12l2 4-8 12L4 8l2-4Z"/></svg>
+                    </div>
+                    <div>
+                      <div class="card-title">APA recertification window now open</div>
+                      <p class="card-sub">Owners and managers should review required steps and completion timing.</p>
+                    </div>
+                  </div>
+                  <div class="mini-badge"><span class="tiny-dot"></span>Due Soon</div>
+                </div>
+                <div class="meta-grid">
+                  <div>
+                    <div class="meta-label">Category</div>
+                    <div class="meta-value">Compliance</div>
+                  </div>
+                  <div>
+                    <div class="meta-label">Posted</div>
+                    <div class="meta-value">2d ago</div>
+                  </div>
+                  <div>
+                    <div class="meta-label">Audience</div>
+                    <div class="meta-value">Owners</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-body">
+                <div class="card-top">
+                  <div class="jobline">
+                    <div class="icon-circle">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+                    </div>
+                    <div>
+                      <div class="card-title">Allstate CAT response procedure update</div>
+                      <p class="card-sub">Updated response guidance for new assignments and field documentation.</p>
+                    </div>
+                  </div>
+                  <div class="mini-badge blue"><span class="tiny-dot"></span>Bulletin</div>
+                </div>
+                <div class="meta-grid">
+                  <div>
+                    <div class="meta-label">Carrier</div>
+                    <div class="meta-value">Allstate</div>
+                  </div>
+                  <div>
+                    <div class="meta-label">Posted</div>
+                    <div class="meta-value">Today</div>
+                  </div>
+                  <div>
+                    <div class="meta-label">Type</div>
+                    <div class="meta-value">Carrier</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-body">
+                <div class="card-top">
+                  <div class="jobline">
+                    <div class="icon-circle">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
+                    </div>
+                    <div>
+                      <div class="card-title">USAA file upload limitations</div>
+                      <p class="card-sub">Temporary limits affect daily file upload volume and timing expectations.</p>
+                    </div>
+                  </div>
+                  <div class="mini-badge blue"><span class="tiny-dot"></span>Bulletin</div>
+                </div>
+                <div class="meta-grid">
+                  <div>
+                    <div class="meta-label">Carrier</div>
+                    <div class="meta-value">USAA</div>
+                  </div>
+                  <div>
+                    <div class="meta-label">Posted</div>
+                    <div class="meta-value">2d ago</div>
+                  </div>
+                  <div>
+                    <div class="meta-label">Type</div>
+                    <div class="meta-value">System</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-body">
+                <div class="card-top">
+                  <div class="jobline">
+                    <div class="icon-circle">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    </div>
+                    <div>
+                      <div class="card-title">Worth knowing: safety training due Q2</div>
+                      <p class="card-sub">Recommended training reminder based on role and active compliance windows.</p>
+                    </div>
+                  </div>
+                  <div class="mini-badge green"><span class="tiny-dot"></span>Curated</div>
+                </div>
+                <div class="meta-grid">
+                  <div>
+                    <div class="meta-label">Focus</div>
+                    <div class="meta-value">Safety</div>
+                  </div>
+                  <div>
+                    <div class="meta-label">Posted</div>
+                    <div class="meta-value">3d ago</div>
+                  </div>
+                  <div>
+                    <div class="meta-label">Read Time</div>
+                    <div class="meta-value">4 min</div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="traditional-feed">
+            <div class="feed-row">
+              <div class="feed-source">Suggested</div>
+              <div class="feed-main">
+                <h4>How to run a more profitable large loss job</h4>
+                <p>Short guide with practical examples from high-performing franchises.</p>
+              </div>
+              <div class="feed-time">Today</div>
+            </div>
+            <div class="feed-row">
+              <div class="feed-source">Training</div>
+              <div class="feed-main">
+                <h4>Winning with adjusters: communication tips</h4>
+                <p>Recommended by your role and recent activity.</p>
+              </div>
+              <div class="feed-time">2d ago</div>
+            </div>
+            <div class="feed-row">
+              <div class="feed-source">Forum</div>
+              <div class="feed-main">
+                <h4>Inside look: top-performing franchises</h4>
+                <p>Community discussion with benchmark ideas and operating notes.</p>
+              </div>
+              <div class="feed-time">1w ago</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="pane">
+          <div class="widget-grid">
+            <article class="widget dark">
+              <div class="widget-label">Audit Performance</div>
+              <div class="widget-value">94%</div>
+              <div class="widget-sub">+6 pts vs last 30 days</div>
+            </article>
+            <article class="widget">
+              <div class="widget-label">APA Status</div>
+              <div class="widget-value">3/5</div>
+              <div class="widget-sub">2 due soon</div>
+            </article>
+            <article class="widget">
+              <div class="widget-label">KPI Health</div>
+              <div class="widget-value">87%</div>
+              <div class="widget-sub">6 need attention</div>
+            </article>
+            <article class="widget orange">
+              <div class="widget-label">Storm Update</div>
+              <div class="widget-value" style="font-size:44px; font-weight:700; line-height:1; letter-spacing:-0.05em;">Active</div>
+              <div class="widget-sub">Gulf Coast severe weather event</div>
+            </article>
+          </div>
+
+          <article class="wide-card orange">
+            <div class="wide-card-head">
+              <h3>Look up people</h3>
+              <div class="chev" style="border-color: rgba(17,17,17,0.18); color:#111; background: rgba(255,255,255,0.35);">&#8594;</div>
+            </div>
+            <p>Search by team, role, region, or department to quickly find the right support person.</p>
+          </article>
+
+          <article class="wide-card">
+            <div class="wide-card-head">
+              <h3>Popular owner resources</h3>
+              <div class="chev">&#8594;</div>
+            </div>
+            <div class="resource-grid">
+              <a class="resource" href="#">
+                <small>Dashboards</small>
+                <strong>Tableau Performance Views</strong>
+              </a>
+              <a class="resource" href="#">
+                <small>Work</small>
+                <strong>Open Jobs in WorkCenter</strong>
+              </a>
+              <a class="resource" href="#">
+                <small>Guides</small>
+                <strong>Owner Playbooks &amp; SOPs</strong>
+              </a>
+              <a class="resource" href="#">
+                <small>Finance</small>
+                <strong>Compensation Tools</strong>
+              </a>
+            </div>
+          </article>
+
+          <article class="wide-card">
+            <div class="wide-card-head">
+              <h3>Persona hubs</h3>
+              <div class="chev">&#8594;</div>
+            </div>
+            <div class="resource-grid">
+              <a class="resource" href="#">
+                <small>Role</small>
+                <strong>Owner &amp; Management</strong>
+              </a>
+              <a class="resource" href="#">
+                <small>Role</small>
+                <strong>Marketing &amp; BD</strong>
+              </a>
+              <a class="resource" href="#">
+                <small>Role</small>
+                <strong>Office &amp; Administration</strong>
+              </a>
+              <a class="resource" href="#">
+                <small>Role</small>
+                <strong>Field Management</strong>
+              </a>
+            </div>
+          </article>
+
+          <article class="list-card">
+            <div class="list-item">
+              <div>
+                <div class="list-item-title">Franchise Forum: State Farm audit format change</div>
+                <div class="list-item-sub">18 replies · HQ verified</div>
+              </div>
+              <div class="chev">&#8594;</div>
+            </div>
+            <div class="list-item">
+              <div>
+                <div class="list-item-title">Quick Links: SERVPRO Source</div>
+                <div class="list-item-sub">Open the source hub and related systems</div>
+              </div>
+              <div class="chev">&#8599;</div>
+            </div>
+            <div class="list-item">
+              <div>
+                <div class="list-item-title">Quick Links: Service Desk</div>
+                <div class="list-item-sub">Get IT help and support resources</div>
+              </div>
+              <div class="chev">&#8599;</div>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
